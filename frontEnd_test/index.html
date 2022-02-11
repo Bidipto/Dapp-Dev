@@ -1,0 +1,121 @@
+<html>
+    <body>
+        <div>
+            <input type = "text" id = "name">
+            <p id = 'age'></p>
+            <p id  = 'name'></p>
+            <button id = 'setOwner'>SET THE OWNER</button>
+            <button id = 'getOwner'>GET THE OWNER</button>
+        </div>
+        
+        <script src= "https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+        <script src = "https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+
+        <script>
+            // We now need to connect the contract to the blockchain
+            // We will use the web3.js library to connect to the blockchain 
+            var contract;
+
+            $(document).ready(function()
+            {
+                web3 = new Web3(web3.currentProvider);
+                var address = "0x40a32c172430cD360E4a1F39Da19aAB14c3C47F4";
+                var abi =[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_fName",
+				"type": "string"
+			},
+			{
+				"name": "_age",
+				"type": "uint256"
+			}
+		],
+		"name": "setOwner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "age",
+				"type": "uint256"
+			}
+		],
+		"name": "Owner",
+		"type": "event"
+	}
+];
+
+                contract = new web3.eth.Contract(abi, address);
+                // Now we fetch the name and he age from the contracts
+                contract.methods.getOwner().call().then(function(result)
+                {
+                    $('#name').html(result);
+                })
+            })
+
+            $('#setOwner').click(function()
+            {
+                var name = "";
+                var age = "";
+                name = $('#name').val();
+                age = $('#age').val();
+                web3.eth.getAccounts().then(function(accounts)
+                {
+                    var acc = accounts[0];
+                    return contract.methods.setOwner(name, age).send({from: acc});
+                }).then(function(tx)
+                {
+                    console.log(tx);
+                }).catch(function(tx)
+                {
+                    console.log(tx);
+                })
+            })
+            
+            
+            // $('#getOwner').click(function()
+            // {
+            //     contract.methods.getOwner().call().then(function(result)
+            //     {
+            //         $('#age').html(result);
+            //     });
+            // })
+            
+        </script>
+
+
+
+
+    </body>
+</html>
